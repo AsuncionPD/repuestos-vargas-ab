@@ -7,6 +7,9 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css">
+    <link rel="icon" type="image/png" href="{{ asset('wrench.png') }}">
+    <link rel="shortcut icon" href="{{ asset('wrench.png') }}" type="image/png">
+    
 </head>
 
 <body class="bg-gray-100 flex flex-col min-h-screen">
