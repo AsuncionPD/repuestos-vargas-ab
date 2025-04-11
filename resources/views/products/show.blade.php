@@ -5,14 +5,14 @@
     <div class="flex flex-col md:flex-row">
         <!-- Imagen del producto -->
         <div class="md:w-1/2">
-            <img src="{{ $product->image }}" alt="{{ $product->name }}" class="w-full h-80 object-cover rounded-lg">
+            <img src="{{ $product->image }}" alt="{{ $product->name }}" class="w-full h-80 object-contain rounded-lg">
         </div>
 
         <!-- Información del producto -->
         <div class="md:w-1/2 md:pl-6 mt-4 md:mt-0 flex flex-col justify-center">
             <div class="flex flex-col gap-3">
                 <h2 class="text-3xl font-bold text-gray-800">{{ $product->name }}</h2>
-                <p class="text-lg text-[#1a5276] font-semibold">${{ number_format($product->price, 2) }}</p>
+                <p class="text-lg text-[#1a5276] font-semibold">₡{{ number_format($product->price, 2) }}</p>
                 <p class="mt-2">{{ $product->description }}</p>
                 <p class="text-md"><strong>Código:</strong> {{ $product->product_code }}</p>
                 <p class="text-md"><strong>Categoría:</strong> {{ $product->category->name }}</p>

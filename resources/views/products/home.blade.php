@@ -19,12 +19,12 @@
         @foreach ($products as $product)
             <a href="{{ route('products.show', $product->id) }}" class="block bg-white rounded-xl shadow-lg p-4 hover:shadow-2xl transition-transform duration-300 product-item">
                 <div class="w-full h-48 overflow-hidden rounded-lg">
-                    <img src="{{ $product->image }}" alt="{{ $product->name }}" class="w-full h-full object-cover">
+                    <img src="{{ $product->image }}" alt="{{ $product->name }}" class="w-full h-full object-contain">
                 </div>
                 <div class="mt-4">
                     <h3 class="text-xl font-bold text-gray-800 product-name">{{ $product->name }}</h3>
                     <p class="text-gray-500 product-code hidden">{{ $product->product_code }}</p> <!-- Código oculto -->
-                    <p class="text-lg text-[#1a5276] font-semibold">${{ number_format($product->price, 2) }}</p>
+                    <p class="text-lg text-[#1a5276] font-semibold">₡{{ number_format($product->price, 2) }}</p>
                 </div>
             </a>
         @endforeach
