@@ -12,15 +12,20 @@ class ProductController extends Controller
 {
     public function index()
     {
-        $products = Product::all();
+        $products = Product::orderBy('name', 'asc')->get(); // Ordena alfabéticamente por el nombre
         return view('products.home', compact('products'));
     }
 
+
     public function adminTable()
     {
-        $products = Product::with('category')->get();
+        $products = Product::with('category')
+                    ->orderBy('name', 'asc') 
+                    ->get();
+    
         return view('products.product', compact('products'));
     }
+
     
 
     public function create()
@@ -76,7 +81,7 @@ class ProductController extends Controller
     public function update(Request $request, Product $product)
     {
         $request->validate([
-            'name' => 'required|unique:products,name,' . $product->id,
+            'name' => 'required|string',
             'description' => 'nullable|string',
             'price' => 'required|numeric',
             'location' => 'nullable|string',
@@ -86,18 +91,25 @@ class ProductController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            // Si ya tiene una imagen, podemos eliminarla de Cloudinary (opcional)
             if ($product->image) {
-                $publicId = last(explode('/', parse_url($product->image, PHP_URL_PATH)));
-                Cloudinary::destroy($publicId); // Eliminar la imagen anterior de Cloudinary
+                $publicId = pathinfo(parse_url($product->image, PHP_URL_PATH), PATHINFO_FILENAME);
+                Cloudinary::destroy($publicId);
             }
-
-            // Subir la nueva imagen a Cloudinary
+        
             $uploadedFile = Cloudinary::upload($request->file('image')->getRealPath());
-            $product->image = $uploadedFile->getSecurePath(); // Obtener la URL segura
+            $imageUrl = $uploadedFile->getSecurePath();
+            $product->image = $imageUrl;
         }
+        
+        $product->name = $request->name;
+        $product->description = $request->description;
+        $product->price = $request->price;
+        $product->location = $request->location;
+        $product->units = $request->units;
+        $product->category_id = $request->category_id;
+        
+        $product->save(); // Esto guarda todos los cambios incluyendo la imagen
 
-        $product->update($request->except('image') + ['image' => $product->image]);
 
         return redirect()->route('products.edit', $product->id)->with('success', 'Producto actualizado correctamente');
     }
@@ -140,10 +152,11 @@ class ProductController extends Controller
     public function byCategory($id)
     {
         $category = ProductCategory::findOrFail($id);
-        $products = Product::where('category_id', $id)->get();
-    
+        $products = Product::where('category_id', $id)
+                           ->orderBy('name', 'asc')  // Ordenar los productos alfabéticamente por nombre
+                           ->get();
+        
         return view('products.index', compact('products', 'category'));
     }
     
-
-}
+} 

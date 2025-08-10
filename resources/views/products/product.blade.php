@@ -21,7 +21,7 @@
 
     <!-- Buscador automático sin botón -->
     <div class="mb-4">
-        <input type="text" id="search" placeholder="Buscar por nombre o código..."
+        <input type="text" id="search" placeholder="Buscar por código, nombre o descripción..."
                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1a5276]" />
     </div>
 
@@ -75,31 +75,41 @@
     </div>
 </div>
 
-<!-- Script para filtrado automático -->
 <script>
+document.addEventListener("DOMContentLoaded", function () {
     const searchInput = document.getElementById('search');
-    searchInput.addEventListener('keyup', function() {
-        const filter = searchInput.value.toUpperCase();
-        const table = document.getElementById('productsTable');
-        const rows = table.getElementsByTagName('tr');
+    const table = document.getElementById('productsTable');
+    const rows = table.getElementsByTagName('tr');
 
-        // Iterar por cada fila en la tabla
+    function normalize(text) {
+        return text
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")  // quita tildes
+            .replace(/[^\w\s]/gi, "")        // elimina caracteres raros
+            .trim();
+    }
+
+    searchInput.addEventListener('input', function () {
+        const searchTerm = normalize(searchInput.value);
+        const searchWords = searchTerm.split(" ");
+
         for (let i = 0; i < rows.length; i++) {
-            const codigoCell = rows[i].getElementsByTagName('td')[0];
-            const nombreCell = rows[i].getElementsByTagName('td')[1];
-            
-            if (codigoCell && nombreCell) {
-                const codigoText = codigoCell.textContent || codigoCell.innerText;
-                const nombreText = nombreCell.textContent || nombreCell.innerText;
-                
-                // Verificar si el filtro coincide con el código o nombre
-                if (codigoText.toUpperCase().indexOf(filter) > -1 || nombreText.toUpperCase().indexOf(filter) > -1) {
-                    rows[i].style.display = "";
-                } else {
-                    rows[i].style.display = "none";
-                }
-            }
+            const cells = rows[i].getElementsByTagName('td');
+            if (cells.length === 0) continue;
+
+            const codigo = normalize(cells[0].textContent || "");
+            const nombre = normalize(cells[1].textContent || "");
+            const descripcion = normalize(cells[3].textContent || ""); // index 3 = descripción
+
+            const combined = `${codigo} ${nombre} ${descripcion}`;
+
+            const matches = searchWords.every(word => combined.includes(word));
+            rows[i].style.display = matches ? "" : "none";
         }
     });
+});
 </script>
+
+
 @endsection

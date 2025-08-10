@@ -150,38 +150,49 @@
             
             <!-- Marca -->
             <div>
-            <h2 class="text-2xl font-bold text-orange-500 mb-2">Repuestos Vargas</h2>
-            <p class="text-sm text-gray-200">Calidad y confianza en cada repuesto.</p>
+                <h2 class="text-2xl font-bold text-orange-500 mb-2">Repuestos Vargas</h2>
+                <p class="text-sm text-gray-200">Calidad y confianza en cada repuesto.</p>
             </div>
-
+    
             <!-- Contacto -->
             <div>
-            <h3 class="text-lg font-semibold text-orange-400 mb-2">Contáctanos</h3>
-            <ul class="space-y-1 text-sm">
-                <li>📞 <a href="tel:60391515" class="hover:text-orange-300 transition">6039-1515</a></li>
-                <li>✉️ <a href="mailto:repuestosvargas28@outlook.com" class="hover:text-orange-300 transition">repuestosvargas28@outlook.com</a></li>
-            </ul>
+                <h3 class="text-lg font-semibold text-orange-400 mb-2">Contáctanos</h3>
+                <ul class="space-y-2 text-sm">
+                    <li>📞 <a href="tel:60391515" class="hover:text-orange-300 transition">6039-1515</a></li>
+                    <li>✉️ <a href="mailto:repuestosvargas28@outlook.com" class="hover:text-orange-300 transition">repuestosvargas28@outlook.com</a></li>
+                    <li class="flex items-start gap-2 mt-2">
+                        <i class="fas fa-map-marker-alt mt-1 text-orange-400"></i>
+                        <div>
+                            <p class="text-gray-200">Alajuela Centro, del costado suroeste del mercado municipal 150 mts al Sur; frente a fábrica de hielo Mazú.</p>
+                            <a href="https://maps.app.goo.gl/gib47BRYtDMCTwXZ6" target="_blank" class="text-orange-300 hover:underline text-sm">
+                                Ver ubicación en Google Maps
+                            </a>
+                        </div>
+                    </li>
+                </ul>
             </div>
-
+    
             <!-- Redes sociales -->
             <div>
-            <h3 class="text-lg font-semibold text-orange-400 mb-2">Síguenos</h3>
-            <div class="flex justify-center md:justify-start space-x-4 text-2xl">
-                <a href="https://www.facebook.com/share/1AFsUdDnCA/?mibextid=wwXIfr" class="hover:text-orange-300 transition">
-                <i class="fab fa-facebook-f"></i>
-                </a>
-                <a href="https://www.instagram.com/repuestosvargas_28?igsh=MTI5OXp1OW9ydjcyMw==" class="hover:text-orange-300 transition">
-                <i class="fab fa-instagram"></i>
-                </a>
-            </div>
+                <h3 class="text-lg font-semibold text-orange-400 mb-2">Síguenos</h3>
+                <div class="flex justify-center md:justify-start space-x-4 text-2xl">
+                    <a href="https://www.facebook.com/share/1AFsUdDnCA/?mibextid=wwXIfr" class="hover:text-orange-300 transition">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="https://www.instagram.com/repuestosvargas_28?igsh=MTI5OXp1OW9ydjcyMw==" class="hover:text-orange-300 transition">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                </div>
             </div>
         </div>
-
+    
         <!-- Derechos -->
         <div class="mt-10 text-center text-xs text-gray-300 border-t border-gray-600 pt-4">
             © 2025 Repuestos Vargas. Todos los derechos reservados.
         </div>
     </footer>
+
+
 
 
 

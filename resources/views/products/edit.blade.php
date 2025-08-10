@@ -72,7 +72,7 @@
 
                 @if($product->image)
                     <div class="mt-2">
-                        <img src="{{ asset($product->image) }}" alt="Imagen actual" class="w-24 h-24 object-cover rounded-xl border">
+                        <img src="{{ $product->image }}" alt="Imagen actual" class="w-24 h-24 object-cover rounded-xl border">
                     </div>
                 @endif
             </div>
