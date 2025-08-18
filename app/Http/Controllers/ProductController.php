@@ -4,9 +4,12 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Product;
-use App\Models\ProductCategory; // Asegúrate de importar el modelo de categorías
+use App\Models\ProductDecrement;
+use Illuminate\Support\Facades\Auth;
+use App\Models\ProductCategory;
 use Illuminate\Support\Facades\Storage;
-use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary; // Asegúrate de incluir esto
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
+use Carbon\Carbon;
 
 class ProductController extends Controller
 {
@@ -20,7 +23,7 @@ class ProductController extends Controller
     public function adminTable()
     {
         $products = Product::with('category')
-                    ->orderBy('name', 'asc') 
+                    ->orderBy('name', 'asc')
                     ->get();
     
         return view('products.product', compact('products'));
@@ -144,19 +147,50 @@ class ProductController extends Controller
     {
         if ($product->units > 0) {
             $product->decrement('units');
+
+            // Guardamos el historial
+            ProductDecrement::create([
+                'product_id' => $product->id,
+                'user_id' => Auth::id(),
+                'units_removed' => 1,
+            ]);
+
             return response()->json(['success' => true, 'units' => $product->units]);
         }
+
         return response()->json(['success' => false]);
     }
+
+
+
 
     public function byCategory($id)
     {
         $category = ProductCategory::findOrFail($id);
         $products = Product::where('category_id', $id)
-                           ->orderBy('name', 'asc')  // Ordenar los productos alfabéticamente por nombre
+                           ->orderBy('name', 'asc')
                            ->get();
         
         return view('products.index', compact('products', 'category'));
     }
+
+    public function reducedHistory(Request $request)
+    {
+        $query = ProductDecrement::with(['product', 'user'])
+                    ->orderBy('created_at', 'desc');
+
+        if ($request->has('date') && $request->date != null) {
     
-} 
+            $start = Carbon::parse($request->date, 'America/Costa_Rica')->startOfDay()->setTimezone('UTC');
+            $end   = Carbon::parse($request->date, 'America/Costa_Rica')->endOfDay()->setTimezone('UTC');
+
+            $query->whereBetween('created_at', [$start, $end]);
+        }
+
+        $decrements = $query->paginate(20)->appends($request->all());
+
+        return view('products.reduced', compact('decrements'));
+    }
+
+    
+}

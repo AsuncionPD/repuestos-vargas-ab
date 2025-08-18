@@ -98,7 +98,7 @@
         <!-- Contenido de la historia -->
         <p class="text-lg text-gray-700 leading-relaxed max-w-3xl mx-auto">
             Desde nuestros inicios, nos hemos dedicado a ofrecer <span class="font-bold text-[#1a5276]">productos de calidad</span> y un
-            <span class="font-bold text-[#1a5276]">servicio excepcional</span> a nuestros clientes. Contamos con 16 años de experiencia en repuestos y reparación.
+            <span class="font-bold text-[#1a5276]">servicio excepcional</span> a nuestros clientes. Respaldados por años de experiencia en repuestos y reparación.
         </p>
 
         <p class="text-lg text-gray-700 leading-relaxed max-w-3xl mx-auto mt-4">

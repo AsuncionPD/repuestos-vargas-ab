@@ -21,15 +21,16 @@
 
                 @auth
                     <p><strong>Ubicación:</strong> {{ $product->location ?? 'No especificada' }}</p>
-                    <p><strong>Unidades disponibles:</strong> <span id="units">{{ $product->units }}</span></p>
+                    <p><strong>Unidades disponibles:</strong> <span id="units-{{ $product->id }}">{{ $product->units }}</span></p>
                     
                     <button onclick="decreaseUnits({{ $product->id }})" class="mt-2 text-red-600 rounded-lg hover:text-red-700 underline">
                         Restar Unidad
                     </button>
+
                 @endauth
                 
-                <a href="https://wa.me/50660391515?text=Hola,%20quiero%20información%20del%20producto:%20{{ urlencode($product->name) }}" 
-                   target="_blank" 
+                <a href="https://wa.me/50660391515?text=Hola,%20quiero%20información%20del%20producto:%20{{ urlencode($product->name) }}"
+                   target="_blank"
                    class="mt-4 inline-block bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg text-center transition duration-200">
                     Pedir por WhatsApp
                 </a>
@@ -64,7 +65,8 @@
 
 <script>
 function decreaseUnits(productId) {
-    const currentUnits = parseInt(document.getElementById("units").textContent);
+    const unitsElement = document.getElementById(`units-${productId}`);
+    const currentUnits = parseInt(unitsElement.textContent);
 
     if (currentUnits <= 0) {
         alert("⚠️ No hay unidades disponibles para restar.");
@@ -78,21 +80,33 @@ function decreaseUnits(productId) {
             headers: {
                 'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            }
+            },
+            body: JSON.stringify({})
         })
-        .then(response => response.json())
+        .then(async response => {
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`HTTP ${response.status}: ${errorText}`);
+            }
+            return response.json();
+        })
         .then(data => {
             if (data.success) {
-                document.getElementById("units").textContent = data.units;
+                unitsElement.textContent = data.units;
             } else {
                 alert("No se pudo actualizar.");
             }
         })
-        .catch(error => console.error('Error:', error));
+        .catch(error => {
+            console.error('Error:', error);
+            alert("Error en la petición: " + error.message);
+        });
     } else {
         alert("Contraseña incorrecta.");
     }
 }
+
+
 </script>
 
 

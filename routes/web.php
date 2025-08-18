@@ -31,7 +31,11 @@ Route::get('/productos', [ProductController::class, 'index'])->name('products.ho
 
 
 // Otras rutas personalizadas
+
 Route::post('/products/{product}/decrease', [ProductController::class, 'decreaseUnits'])->name('products.decrease');
+
+
+
 Route::get('/products/category/{id}', [ProductController::class, 'byCategory'])->name('products.byCategory');
 
 
@@ -61,6 +65,9 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/products/{product}/edit', [ProductController::class, 'edit'])->name('products.edit');
     Route::put('/products/{product}', [ProductController::class, 'update'])->name('products.update');
     Route::delete('/products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
+
+    Route::get('/products/reduced-history', [ProductController::class, 'reducedHistory'])->name('products.reduced');
+
 });
 
 Route::get('/products/{product}', [ProductController::class, 'show'])->name('products.show');

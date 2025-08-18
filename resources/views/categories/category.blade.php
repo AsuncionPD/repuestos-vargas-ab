@@ -5,9 +5,14 @@
     <!-- Encabezado con botón responsivo -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-3 sm:gap-0">
         <h1 class="text-2xl sm:text-3xl font-bold text-center sm:text-left">Categorías</h1>
-        <a href="{{ route('categories.create') }}" class="flex items-center px-4 py-2 text-[#1a5276] hover:text-[#154360] focus:outline-none hover:border-[#154360] transition">
-            <i class="fas fa-plus mr-2"></i> Agregar Categoría
-        </a>
+
+        <div class="flex flex-col sm:flex-row gap-3">
+            <a href="{{ route('categories.create') }}"
+                class="flex items-center justify-center px-4 py-2 text-[#1a5276] hover:text-[#154360] focus:outline-none hover:border-[#154360] transition border border-[#1a5276] rounded text-sm w-full sm:w-auto">
+                + Agregar Categoría
+            </a>
+        </div>
+
     </div>
 
     @if (session('success'))

@@ -3,14 +3,23 @@
 @section('content')
 <div class="container mx-auto p-4">
     <!-- Encabezado con botón responsivo -->
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-3 sm:gap-0">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-3">
         <h1 class="text-3xl font-bold">Productos</h1>
-        <!-- Verificar si el usuario está autenticado y si tiene el rol de admin -->
-        <a href="{{ route('products.create') }}"
-            class="flex items-center px-4 py-2 text-[#1a5276] hover:text-[#154360] focus:outline-none hover:border-[#154360] transition">
-            + Agregar Producto
-        </a>
+
+        <div class="flex flex-col sm:flex-row gap-3">
+            <a href="{{ route('products.create') }}"
+                class="flex items-center justify-center px-4 py-2 text-[#1a5276] hover:text-[#154360] focus:outline-none hover:border-[#154360] transition border border-[#1a5276] rounded text-sm w-full sm:w-auto">
+                + Agregar Producto
+            </a>
+
+            <a href="{{ route('products.reduced') }}"
+                class="flex items-center justify-center px-4 py-2 bg-[#1a5276] text-white rounded hover:bg-[#154360] transition text-sm w-full sm:w-auto">
+                Ver productos restados
+            </a>
+        </div>
     </div>
+
+
 
     <!-- Notificación de éxito -->
     @if (session('success'))
