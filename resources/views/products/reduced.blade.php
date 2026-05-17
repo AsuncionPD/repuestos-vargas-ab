@@ -21,7 +21,6 @@
         </form>
     </div>
 
-    <!-- Tabla responsive -->
     <div class="overflow-x-auto">
         <table class="min-w-full bg-white shadow-md rounded overflow-hidden text-sm sm:text-base">
             <thead class="bg-[#1a5276] text-white">
@@ -29,6 +28,7 @@
                     <th class="py-3 px-4 sm:px-6 text-left">Código</th>
                     <th class="py-3 px-4 sm:px-6 text-left">Nombre</th>
                     <th class="py-3 px-4 sm:px-6 text-left">Descripción</th>
+                    <th class="py-3 px-4 sm:px-6 text-left">Precio</th>
                     <th class="py-3 px-4 sm:px-6 text-left">Usuario</th>
                     <th class="py-3 px-4 sm:px-6 text-left">Fecha</th>
                     <th class="py-3 px-4 sm:px-6 text-left">Hora</th>
@@ -39,14 +39,19 @@
                     <tr class="border-b hover:bg-gray-100">
                         <td class="py-3 px-4 sm:px-6">{{ $dec->product->product_code ?? 'N/A' }}</td>
                         <td class="py-3 px-4 sm:px-6">{{ $dec->product->name ?? 'N/A' }}</td>
-                        <td class="py-3 px-4 sm:px-6">{{ $dec->product->description ?? 'Sin descripción' }}</td>
+                        <td class="py-3 px-4 sm:px-6 max-w-[200px] truncate">
+                            {{ $dec->product->description ?? 'Sin descripción' }}
+                        </td>
+                        <td class="py-3 px-4 sm:px-6">
+                            ₡{{ number_format($dec->product->price ?? 0, 2) }}
+                        </td>
                         <td class="py-3 px-4 sm:px-6">{{ $dec->user_id }}</td>
                         <td class="py-3 px-4 sm:px-6">{{ $dec->created_at->timezone('America/Costa_Rica')->format('d/m/Y') }}</td>
                         <td class="py-3 px-4 sm:px-6">{{ $dec->created_at->timezone('America/Costa_Rica')->format('H:i') }}</td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" class="py-4 text-center text-gray-500">No hay registros de productos restados.</td>
+                        <td colspan="7" class="py-4 text-center text-gray-500">No hay registros de productos restados.</td>
                     </tr>
                 @endforelse
             </tbody>
