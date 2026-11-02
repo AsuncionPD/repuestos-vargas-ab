@@ -3,15 +3,45 @@
 namespace App\Http\Controllers;
 
 use App\Models\ProductCategory;
+use App\Services\AbExperimentService;
 use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
 
-    public function index()
+    public function index(Request $request, AbExperimentService $experiment)
+    {
+        // El experimento se aplica únicamente a la portada canónica. La ruta
+        // categories.index conserva su comportamiento original.
+        if (!$request->routeIs('extras.home')) {
+            return $this->homeView('extras.home', 'unknown', false);
+        }
+
+        $distinctId = (string) $request->attributes->get('posthog_distinct_id', '');
+        $assignment = $distinctId !== '' ? $experiment->resolve($distinctId) : null;
+        $variant = $assignment['variant'] ?? null;
+
+        // La exposición oficial solo se registra al recibir la portada.
+        if ($assignment !== null) {
+            $experiment->expose($assignment, $distinctId);
+        }
+
+        $view = $variant === 'test' ? 'extras.home-redisenado' : 'extras.home';
+
+        return $this->homeView($view, $variant ?? 'unknown', $variant !== null);
+    }
+
+    public function redisenado()
+    {
+        // Vista de comprobación visual: no evalúa la flag ni registra exposición.
+        return $this->homeView('extras.home-redisenado', 'preview');
+    }
+
+    // Obtiene las categorías y las pasa a la vista de inicio indicada
+    private function homeView(string $view, ?string $abVariant = null, bool $abEntry = false)
     {
         $categories = ProductCategory::all(); // Obtiene todas las categorías
-        return view('extras.home', compact('categories')); // Pasa las categorías a la vista
+        return view($view, compact('categories', 'abVariant', 'abEntry')); // Pasa las categorías a la vista
     }
 
     public function tableView()

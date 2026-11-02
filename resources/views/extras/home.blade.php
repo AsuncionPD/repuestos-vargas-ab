@@ -25,6 +25,7 @@
 
             <div class="mt-4">
                 <a href="{{ route('products.home') }}"
+                    data-ab-hero-cta="ver_todo"
                     class="inline-block px-6 py-2 text-lg font-semibold text-white bg-orange-500 border-2 border-orange-500 rounded-lg shadow-md transition-all duration-300 ease-in-out hover:bg-orange-600 hover:border-orange-600 hover:shadow-lg active:scale-95">
                     Ver todo
                 </a>

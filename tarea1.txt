@@ -1,0 +1,55 @@
+Continuemos con el diagnóstico que realizaste anteriormente sobre el proyecto Laravel Repuestos Vargas.
+
+Ahora tienes autorización para realizar las modificaciones mínimas necesarias para que podamos visualizar correctamente la versión original y la versión rediseñada.
+
+**OBJETIVO PRINCIPAL**
+
+Permitir que las dos versiones de la página de inicio funcionen de forma independiente:
+
+- `http://127.0.0.1:8000/` → Página original.
+- `http://127.0.0.1:8000/prueba-redisenado` → Página rediseñada.
+
+**TAREAS**
+
+1. Revisa `routes/web.php` y elimina únicamente la duplicación de la ruta `/`, conservando la ruta funcional que utiliza `CategoryController@index`.
+
+2. En `home-redisenado.blade.php`, cambia la herencia de `extras.layout` a `extras.layout-redisenado`.
+
+3. Reutiliza `CategoryController` para mostrar la página rediseñada. Puedes crear un método `redisenado()` o la solución más sencilla que permita reutilizar la lógica que obtiene `$categories`, sin duplicar innecesariamente esa lógica.
+
+4. Registra una ruta GET `/prueba-redisenado` que utilice el controlador y muestre `extras.home-redisenado`.
+
+5. Comprueba que las rutas nombradas `products.home`, `products.byCategory`, `extras.home` y las relacionadas con autenticación sigan funcionando.
+
+6. Revisa las imágenes que faltan. No inventes imágenes ni elimines elementos visuales. Indica qué recursos necesitamos recuperar y dónde colocarlos.
+
+7. Revisa el JavaScript duplicado del layout original y corrige únicamente los errores que impidan funcionar al menú, conservando su comportamiento actual.
+
+8. Ejecuta las comprobaciones disponibles para verificar que ambas vistas puedan renderizarse correctamente y que no existan errores de rutas o variables.
+
+**RESTRICCIONES**
+
+- No instales ni configures PostHog todavía.
+- No crees `ABExperimentController`.
+- No cambies el diseño visual.
+- No modifiques la base de datos.
+- No ejecutes migraciones.
+- No elimines funcionalidades de productos, categorías o autenticación.
+- No cambies las URL públicas existentes.
+- No modifiques archivos `.env`.
+- Conserva los nombres de archivo existentes.
+- Realiza solamente los cambios necesarios para que funcionen las dos vistas.
+
+**AL FINAL**
+
+Indica:
+
+1. Qué archivos modificaste.
+2. Qué cambios realizaste.
+3. Qué comprobaciones ejecutaste y sus resultados.
+4. Si ambas vistas funcionan.
+5. Si queda algún problema pendiente, especialmente de imágenes.
+
+No afirmes que probaste las páginas visualmente si no pudiste abrirlas en un navegador.
+
+Realiza las modificaciones ahora.

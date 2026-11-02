@@ -16,11 +16,8 @@ use App\Http\Controllers\AuthController;
 |
 */
 
-Route::get('/', function () {
-    return view('extras.home');
-});
-
 Route::get('/', [CategoryController::class, 'index'])->name('extras.home');
+Route::get('/prueba-redisenado', [CategoryController::class, 'redisenado'])->name('extras.home-redisenado');
 Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
 Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
 

@@ -10,6 +10,9 @@
     <link rel="icon" type="image/png" href="{{ asset('wrench.png') }}">
     <link rel="shortcut icon" href="{{ asset('wrench.png') }}" type="image/png">
 
+    @include('extras.partials.posthog-meta')
+    @vite(['resources/js/analytics.js'])
+
 </head>
 
 <body class="bg-gray-100 flex flex-col min-h-screen">
@@ -85,8 +88,8 @@
                 <!-- Menú normal en pantallas grandes -->
                 <div class="hidden sm:flex space-x-6">
                     <a href="{{ route('extras.home') }}" class="text-white hover:text-orange-300 transition duration-300">Inicio</a>
-                    <a href="{{ route('products.home') }}" class="text-white hover:text-orange-300 transition duration-300">Productos</a>
-                    <a href="{{ route('extras.home') }}#categorias" class="text-white hover:text-orange-300 transition duration-300">Categorías</a>
+                    <a href="{{ route('products.home') }}" data-ab-navigation="productos" data-ab-navigation-type="productos" data-ab-navigation-location="desktop" class="text-white hover:text-orange-300 transition duration-300">Productos</a>
+                    <a href="{{ route('extras.home') }}#categorias" data-ab-navigation="categorias" data-ab-navigation-type="categorias" data-ab-navigation-location="desktop" class="text-white hover:text-orange-300 transition duration-300">Categorías</a>
                     <a href="#contacto" class="text-white hover:text-orange-300 transition duration-300">Contacto</a>
                     @if(Auth::check() && Auth::user()->role == 'admin')
                         <a href="{{ route('auth.dashboard') }}" class="text-white hover:text-orange-300 transition duration-300">Administración</a>
@@ -102,8 +105,8 @@
             <!-- Menú desplegable en móviles -->
             <div id="mobile-menu" class="hidden sm:hidden bg-[#1a5276] p-3 mt-2 text-center">
                 <a href="{{ route('extras.home') }}" class="block text-white py-2 hover:text-orange-300 transition duration-300">Inicio</a>
-                <a href="{{ route('products.home') }}" class="block text-white py-2 hover:text-orange-300 transition duration-300">Productos</a>
-                <a href="{{ route('extras.home') }}#categorias" class="block text-white py-2 hover:text-orange-300 transition duration-300">Categorías</a>
+                <a href="{{ route('products.home') }}" data-ab-navigation="productos" data-ab-navigation-type="productos" data-ab-navigation-location="mobile" class="block text-white py-2 hover:text-orange-300 transition duration-300">Productos</a>
+                <a href="{{ route('extras.home') }}#categorias" data-ab-navigation="categorias" data-ab-navigation-type="categorias" data-ab-navigation-location="mobile" class="block text-white py-2 hover:text-orange-300 transition duration-300">Categorías</a>
                 <a href="#contacto" class="block text-white py-2 hover:text-orange-300 transition duration-300">Contacto</a>
                 @if(Auth::check() && Auth::user()->role == 'admin')
                     <a href="{{ route('auth.dashboard') }}" class="text-white hover:text-orange-300 transition duration-300">Administración</a>
@@ -196,28 +199,6 @@
 
 
 
-
-    <script>
-        const menuBtn = document.getElementById('menu-btn');
-        const closeMenu = document.getElementById('close-menu');
-        const mobileMenu = document.getElementById('mobile-menu');
-        const overlay = document.getElementById('overlay');
-
-        menuBtn.addEventListener('click', () => {
-            mobileMenu.classList.remove('translate-x-full');
-            overlay.classList.remove('hidden');
-        });
-
-        closeMenu.addEventListener('click', () => {
-            mobileMenu.classList.add('translate-x-full');
-            overlay.classList.add('hidden');
-        });
-
-        overlay.addEventListener('click', () => {
-            mobileMenu.classList.add('translate-x-full');
-            overlay.classList.add('hidden');
-        });
-    </script>
 
 </body>
 </html>

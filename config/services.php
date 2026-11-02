@@ -31,4 +31,23 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | PostHog
+    |--------------------------------------------------------------------------
+    |
+    | El Project API Key (phc_...) es una clave pública pensada para el
+    | cliente. Nunca debe colocarse aquí una Personal API Key (phx_...) ni
+    | un Project Secret (phs_...).
+    |
+    */
+
+    'posthog' => [
+        'project_token' => env('POSTHOG_PROJECT_TOKEN'),
+        'host' => env('POSTHOG_HOST', 'https://us.i.posthog.com'),
+        'experiment_key' => env('POSTHOG_EXPERIMENT_KEY', 'repuestos-vargas-header-ab'),
+        'environment' => env('POSTHOG_ENVIRONMENT', env('APP_ENV', 'production')),
+        'test_environment' => env('POSTHOG_TEST_ENVIRONMENT'),
+    ],
+
 ];

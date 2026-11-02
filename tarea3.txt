@@ -1,0 +1,328 @@
+# TAREA 3 — CORRECCIÓN DE MÉTRICAS A/B EN REPUESTOS VARGAS
+
+Actúa como desarrollador senior especializado en Laravel, PHP, Blade, JavaScript, Vite y PostHog.
+
+Estamos desarrollando un experimento A/B de UX para la página web *Repuestos Vargas*.
+
+Ya implementamos PostHog, la identificación de visitantes, el sistema de variantes A/B y los eventos personalizados.
+
+Sin embargo, necesitamos corregir las métricas porque las definimos incorrectamente anteriormente.
+
+*IMPORTANTE: El evento header_navigation_click ya funciona y aparece correctamente en PostHog. No debes eliminarlo, renombrarlo ni romper su implementación actual.*
+
+## 1. ESTADO ACTUAL DEL PROYECTO
+
+Aplicación Laravel funcionando en localhost:
+
+http://127.0.0.1:8000
+
+Tenemos dos versiones:
+
+*Original:*
+- resources/views/extras/home.blade.php
+- resources/views/extras/layout.blade.php
+
+*Rediseño:*
+- resources/views/extras/home-redisenado.blade.php
+- resources/views/extras/layout-redisenado.blade.php
+
+La ruta /prueba-redisenado permite visualizar el rediseño.
+
+El proyecto utiliza CategoryController y una integración existente con PostHog.
+
+Los eventos se gestionan principalmente desde:
+
+resources/js/analytics.js
+
+Actualmente header_navigation_click registra los clics de navegación y funciona incluso cuando el enlace cambia de página.
+
+Se comprobó su aparición en PostHog Activity.
+
+No necesitamos rehacer esa funcionalidad.
+
+## 2. NUEVAS MÉTRICAS DEFINITIVAS
+
+Queremos medir exactamente tres interacciones.
+
+### MÉTRICA 1 — CLIC EN PRODUCTOS DESDE EL NAVBAR
+
+Elemento:
+
+Enlace *Productos* del navbar, tanto en escritorio como en móvil.
+
+Evento existente:
+
+header_navigation_click
+
+Debe incluir una propiedad que permita identificar específicamente Productos, por ejemplo:
+
+navigation_type = productos
+
+O utilizar el valor equivalente existente, si ya funciona correctamente.
+
+No debe registrar clics en otras partes de la página como si fueran navegación del navbar.
+
+No cambies el nombre del evento.
+
+No cambies la configuración de transporte que ya permite que el evento llegue correctamente a PostHog.
+
+### MÉTRICA 2 — CLIC EN CATEGORÍAS DESDE EL NAVBAR
+
+Elemento:
+
+Enlace *Categorías* del navbar, tanto en escritorio como en móvil.
+
+Utiliza el mismo evento existente:
+
+header_navigation_click
+
+Pero diferencia la acción mediante una propiedad:
+
+navigation_type = categorias
+
+Mantén el comportamiento original del enlace, incluyendo el desplazamiento hacia la sección #categorias.
+
+No confundas el enlace Categorías del navbar con las tarjetas de categorías que aparecen en el contenido de la página.
+
+Queremos poder configurar dos métricas independientes en PostHog utilizando el mismo evento y filtros por propiedad:
+
+- Clics en Productos.
+- Clics en Categorías.
+
+### MÉTRICA 3 — CLIC EN EL CTA DEL HERO
+
+Elemento:
+
+Botón naranja *Ver todo* del banner principal o hero.
+
+Debemos medir esta acción tanto en la versión original como en la rediseñada.
+
+Crea un evento personalizado nuevo:
+
+hero_cta_click
+
+Propiedades recomendadas:
+
+- cta_name: ver_todo
+- cta_location: hero
+- destination: URL real del botón
+- ab_variant: variante del experimento
+
+Identifica primero dónde se encuentra el botón en cada versión de la página.
+
+Puedes agregar un atributo como:
+
+data-ab-hero-cta="ver_todo"
+
+No modifiques el diseño, color, texto, tamaño, accesibilidad ni destino del botón.
+
+La funcionalidad del CTA debe permanecer intacta.
+
+El evento debe enviarse aunque el usuario navegue inmediatamente a otra página.
+
+## 3. ELIMINAR EVENTOS QUE YA NO CORRESPONDEN
+
+Los eventos anteriores ya no forman parte de este experimento:
+
+- contact_click
+- search_performed
+- product_first_click
+
+Busca su implementación en analytics.js y elimina exclusivamente:
+
+1. Los listeners destinados a registrar estos eventos.
+2. Sus funciones auxiliares utilizadas únicamente por esos eventos.
+3. Los atributos data-ab-* que se añadieron exclusivamente para esas mediciones.
+4. Las variables de almacenamiento temporal utilizadas únicamente para esas mediciones.
+
+No elimines funciones compartidas que sean necesarias para PostHog, la navegación o el experimento.
+
+No elimines el buscador, botones de contacto, enlaces de WhatsApp, tarjetas de productos ni ninguna funcionalidad real del sitio.
+
+No borres eventos históricos almacenados en PostHog.
+
+No elimines métricas o configuraciones del panel de PostHog mediante API. Indica qué debo quitar manualmente del experimento.
+
+## 4. CONSERVAR LA INTEGRACIÓN EXISTENTE
+
+Mantén intactos, salvo ajustes estrictamente necesarios:
+
+- Inicialización de PostHog.
+- Project API key y host.
+- Identificación persistente de visitantes.
+- Integración con Vite.
+- Evaluación de feature flags.
+- Asignación de variantes control y test.
+- Registro de exposición del experimento.
+- Asociación entre visitante, evento y variante.
+- Manejo de errores.
+- Configuración de transporte de eventos que ya está funcionando.
+
+En particular, no cambies innecesariamente la función capture() actual.
+
+Ya comprobamos que los eventos llegan correctamente utilizando el mecanismo vigente.
+
+No agregues event.preventDefault() de forma permanente.
+
+Los enlaces deben seguir navegando normalmente después de registrar el evento.
+
+## 5. INSTRUMENTAR AMBOS DISEÑOS
+
+Revisa estos archivos:
+
+- resources/views/extras/home.blade.php
+- resources/views/extras/home-redisenado.blade.php
+- resources/views/extras/layout.blade.php
+- resources/views/extras/layout-redisenado.blade.php
+- resources/js/analytics.js
+
+Identifica los enlaces de Productos y Categorías y el CTA del hero.
+
+Configura la instrumentación de forma consistente entre ambas variantes.
+
+Evita eventos duplicados cuando los usuarios hagan clic sobre un ícono, texto o elemento interno del enlace.
+
+No instrumentes tarjetas de categorías como si fueran enlaces del navbar.
+
+No crees nuevas rutas.
+
+No modifiques los estilos existentes.
+
+## 6. SOPORTE PARA PRUEBAS EN LOCALHOST
+
+Necesitamos comprobar los tres comportamientos antes de lanzar el experimento oficial.
+
+El rediseño se puede abrir mediante:
+
+http://127.0.0.1:8000/prueba-redisenado
+
+Sin embargo, esa ruta es de previsualización y podría utilizar:
+
+ab_variant = preview
+
+Por tanto:
+
+1. Permite comprobar que los eventos del navbar y del CTA se envían desde ambas vistas.
+2. Distingue claramente los eventos de prueba de los oficiales.
+3. No registres exposiciones oficiales del experimento desde /prueba-redisenado.
+4. No inventes una variante control o test para las visitas de previsualización.
+5. Conserva la identificación del entorno de pruebas.
+6. No bloquees el registro de eventos personalizados únicamente porque el experimento todavía está en borrador.
+7. No incluyas eventos de previsualización en los resultados oficiales del A/B.
+
+La prueba local debe permitir comprobar que los tres comportamientos producen eventos, aunque todavía no se esté realizando la asignación oficial de variantes.
+
+## 7. PRUEBAS REQUERIDAS
+
+Comprueba que:
+
+*Productos*
+
+Al hacer clic en Productos desde el navbar se envía:
+
+header_navigation_click
+
+Con la propiedad correspondiente a Productos.
+
+*Categorías*
+
+Al hacer clic en Categorías desde el navbar se envía:
+
+header_navigation_click
+
+Con la propiedad correspondiente a Categorías.
+
+*Hero*
+
+Al hacer clic en el botón naranja Ver todo se envía:
+
+hero_cta_click
+
+Con la propiedad cta_name = ver_todo.
+
+También verifica:
+
+- Que los tres comportamientos funcionen en la página original.
+- Que los tres funcionen en la página rediseñada.
+- Que los enlaces continúen navegando normalmente.
+- Que no se envíen eventos duplicados por un mismo clic.
+- Que PostHog cargue correctamente.
+- Que Vite compile sin errores.
+- Que las vistas Blade funcionen.
+- Que no se alteren las rutas.
+- Que los eventos conserven la información de la variante.
+- Que los eventos antiguos ya no se emitan desde la nueva instrumentación.
+
+Si no puedes confirmar la recepción real desde el panel de PostHog, explica cómo debo verificarla manualmente en Activity → Live events.
+
+No inventes resultados.
+
+## 8. CONFIGURACIÓN POSTERIOR EN POSTHOG
+
+Prepara las instrucciones para configurar exactamente tres métricas del experimento A/B:
+
+*Principal 1 — Tasa de clics en Productos*
+
+- Evento: header_navigation_click
+- Filtro: navigation_type = productos
+- Tipo: Funnel
+- Objetivo: Increase
+
+*Principal 2 — Tasa de clics en Categorías*
+
+- Evento: header_navigation_click
+- Filtro: navigation_type = categorias
+- Tipo: Funnel
+- Objetivo: Increase
+
+*Principal 3 — Tasa de clics en el CTA del hero*
+
+- Evento: hero_cta_click
+- Filtro: cta_name = ver_todo
+- Tipo: Funnel
+- Objetivo: Increase
+
+Estas tres métricas deben calcular la proporción de usuarios expuestos al experimento que realizaron la acción correspondiente.
+
+Los filtros deben coincidir exactamente con las propiedades reales que se envían desde JavaScript.
+
+Si alguna propiedad utiliza actualmente un nombre o valor diferente, adapta el código de manera consistente y documenta el valor final.
+
+No modifiques el evento de exposición ni dupliques el paso de exposición en el funnel.
+
+No crees métricas adicionales.
+
+## 9. RESTRICCIONES
+
+- No modificar la base de datos.
+- No ejecutar migraciones.
+- No modificar la autenticación.
+- No eliminar funcionalidades existentes.
+- No crear otro controlador A/B.
+- No reconstruir PostHog desde cero.
+- No modificar las imágenes pendientes.
+- No alterar visualmente las páginas.
+- No modificar las rutas de productos o categorías.
+- No borrar datos históricos de PostHog.
+- No lanzar el experimento.
+- No eliminar header_navigation_click.
+- No cambiar la configuración de envío que ya funciona sin necesidad.
+
+Realiza solamente las modificaciones necesarias para adaptar la instrumentación a las tres métricas definitivas.
+
+## 10. RESULTADO FINAL
+
+Al terminar, responde en español con:
+
+1. Archivos modificados.
+2. Cambios exactos realizados.
+3. Eventos antiguos eliminados del código.
+4. Configuración final de los dos eventos que permanecerán: header_navigation_click y hero_cta_click.
+5. Propiedades utilizadas para distinguir las tres métricas.
+6. Pruebas realizadas y sus resultados.
+7. Cómo comprobar cada interacción en PostHog Live events.
+8. Qué métricas antiguas debo eliminar manualmente del experimento.
+9. Cómo crear las tres nuevas métricas en PostHog.
+10. Problemas pendientes antes de activar el A/B.
+
+*IMPORTANTE: El objetivo es conservar lo que ya funciona y modificar únicamente las métricas del experimento de Repuestos Vargas.*

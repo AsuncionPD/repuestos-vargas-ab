@@ -1,0 +1,552 @@
+# IMPLEMENTACIÓN COMPLETA DE POSTHOG A/B EN REPUESTOS VARGAS
+
+Actúa como un desarrollador senior especializado en Laravel, PHP, Blade, JavaScript, Vite, analítica web y experimentación A/B con PostHog.
+
+Necesito que implementes correctamente un experimento A/B en una aplicación Laravel existente llamada **Repuestos Vargas**.
+
+Responde siempre en español.
+
+## 1. CONTEXTO DEL PROYECTO
+
+Repuestos Vargas es una página web de venta y consulta de repuestos para electrodomésticos.
+
+Está desarrollada utilizando Laravel, PHP, Blade, JavaScript y Tailwind CSS.
+
+Actualmente tenemos dos versiones funcionales de la página de inicio.
+
+**Versión A — Original**
+
+URL de desarrollo:
+
+`http://127.0.0.1:8000/`
+
+Archivos:
+
+- `resources/views/extras/home.blade.php`
+- `resources/views/extras/layout.blade.php`
+
+**Versión B — Rediseñada**
+
+URL de desarrollo:
+
+`http://127.0.0.1:8000/prueba-redisenado`
+
+Archivos:
+
+- `resources/views/extras/home-redisenado.blade.php`
+- `resources/views/extras/layout-redisenado.blade.php`
+
+Ambas vistas ya funcionan correctamente.
+
+Se verificaron las rutas, controladores, renderización de Blade y respuestas HTTP 200.
+
+No debemos repetir esas correcciones ni reconstruir las vistas.
+
+## 2. ARQUITECTURA ACTUAL
+
+El proyecto utiliza el controlador:
+
+`app/Http/Controllers/CategoryController.php`
+
+Actualmente:
+
+- `index()` devuelve la vista original.
+- `redisenado()` devuelve la vista rediseñada.
+- Ambos reutilizan un método privado llamado `homeView()`.
+- `homeView()` obtiene las categorías mediante `ProductCategory::all()`.
+- Ambas vistas reciben la variable `$categories`.
+
+Las rutas registradas incluyen:
+
+- `/` → `CategoryController@index`
+- `/prueba-redisenado` → `CategoryController@redisenado`
+- `products.home`
+- `products.byCategory`
+- `extras.home`
+- `extras.home-redisenado`
+- Las rutas de autenticación y administración.
+
+**No elimines ni sustituyas la lógica funcional del controlador.**
+
+No existe actualmente un `ABExperimentController`, porque fue eliminado durante la depuración anterior.
+
+No lo recrees si no es necesario.
+
+## 3. OBJETIVO GENERAL
+
+Implementar PostHog para realizar un experimento A/B entre las dos versiones de Repuestos Vargas.
+
+La distribución deseada es:
+
+- Variante A: `control` — Página original.
+- Variante B: `test` — Página rediseñada.
+- Distribución: 50% / 50%.
+
+La asignación de variantes debe realizarse mediante las feature flags de PostHog.
+
+Cada visitante debe conservar su variante durante el experimento.
+
+El objetivo es comparar cómo los cambios de diseño afectan la navegación y las interacciones de los usuarios.
+
+## 4. EXPERIMENTO Y FEATURE FLAG
+
+La clave propuesta para el experimento es:
+
+`repuestos-vargas-header-ab`
+
+Sin embargo, el experimento ya fue creado previamente en el panel web de PostHog.
+
+Por tanto:
+
+1. Comprueba si el proyecto contiene una clave de feature flag previamente configurada.
+2. No asumas que la clave propuesta ya existe en PostHog.
+3. No inventes una asignación distinta si la clave real del experimento es otra.
+4. Utiliza una variable de configuración para facilitar la corrección de la clave.
+5. Si no puedes confirmar la clave real, indica exactamente dónde debo consultar ese dato en PostHog.
+6. No crees automáticamente un segundo experimento.
+7. No lances el experimento desde código.
+8. No modifiques el reparto 50/50 configurado en PostHog.
+
+La asignación A/B debe funcionar cuando el experimento esté activado.
+
+Mientras el experimento esté en borrador o la flag no devuelva una variante válida, debe mostrarse la página original como respaldo, sin registrar una exposición falsa al grupo control.
+
+## 5. TAREA 1 — REVISAR LA INSTALACIÓN DE POSTHOG
+
+Antes de modificar cualquier archivo, inspecciona el proyecto.
+
+Comprueba si están instalados:
+
+- `posthog/posthog-php`
+- `posthog-js`
+
+Verifica los siguientes archivos:
+
+- `composer.json`
+- `package.json`
+- `vite.config.js`
+- `app/Providers/AppServiceProvider.php`
+- `config/services.php`
+- `resources/js/app.js`
+- `resources/js/analytics.js`, si existe.
+- Los layouts Blade originales y rediseñados.
+
+Comprueba también si existen variables de PostHog en `.env`, pero no muestres sus valores secretos.
+
+Si falta alguna dependencia, instálala utilizando Composer o npm.
+
+No reinstales dependencias que ya existan correctamente.
+
+Consulta la documentación correspondiente a la versión instalada para evitar utilizar métodos obsoletos o incompatibles.
+
+## 6. TAREA 2 — CONFIGURACIÓN DE POSTHOG
+
+Configura correctamente PostHog para Laravel y JavaScript.
+
+Las variables previstas son:
+
+`POSTHOG_PROJECT_TOKEN`
+
+`POSTHOG_HOST`
+
+`VITE_POSTHOG_PROJECT_TOKEN`
+
+`VITE_POSTHOG_HOST`
+
+También puedes incorporar una variable de configuración para la clave del experimento, por ejemplo:
+
+`POSTHOG_EXPERIMENT_KEY`
+
+La configuración debe permitir compartir el Project API key entre PHP y Vite cuando corresponda.
+
+No sobrescribas valores existentes.
+
+No inventes tokens reales.
+
+No expongas claves personales o privadas en el navegador.
+
+Si faltan valores necesarios, explica qué debo obtener del panel de PostHog.
+
+Verifica la correcta inicialización de PostHog tanto en PHP como en JavaScript.
+
+Evita inicializaciones duplicadas y eventos duplicados.
+
+## 7. TAREA 3 — ASIGNACIÓN A/B EN LARAVEL
+
+Integra la evaluación de la feature flag en el flujo actual de Laravel.
+
+Requisitos:
+
+1. Reutilizar `CategoryController` siempre que sea posible.
+2. Mantener la consulta de categorías existente.
+3. Mantener el nombre de la ruta principal `extras.home`.
+4. Permitir que la ruta `/` muestre automáticamente la variante asignada.
+5. Mostrar `extras.home` para `control`.
+6. Mostrar `extras.home-redisenado` para `test`.
+7. Mantener `/prueba-redisenado` para comprobaciones visuales, sin confundir sus visitas con exposiciones del experimento oficial.
+8. Mantener todas las demás rutas existentes.
+
+No crees rutas duplicadas.
+
+No reemplaces los controladores de productos o autenticación.
+
+### Identificación de usuarios
+
+Necesitamos que los visitantes anónimos tengan un identificador único y persistente.
+
+Implementa una solución basada en cookies u otro mecanismo apropiado para Laravel.
+
+El identificador debe mantenerse entre visitas y durante la navegación.
+
+Es indispensable que el mismo identificador sea utilizado en:
+
+- La evaluación de la feature flag desde PHP.
+- El evento de exposición al experimento.
+- Los eventos enviados desde PostHog JavaScript.
+
+Para usuarios autenticados, revisa cómo mantener una identidad coherente sin duplicar participantes al cambiar entre estado anónimo y autenticado.
+
+No utilices un identificador fijo para todos los visitantes.
+
+### Exposición al experimento
+
+Implementa correctamente la exposición mediante el mecanismo compatible con el SDK instalado.
+
+Si se utiliza `$feature_flag_called`, comprueba que se envíen las propiedades requeridas por PostHog.
+
+No inventes eventos de exposición.
+
+No marques manualmente un visitante como `control` si PostHog no ha devuelto una variante válida.
+
+Evita registrar múltiples exposiciones innecesarias al navegar.
+
+## 8. TAREA 4 — CREAR LOS EVENTOS PERSONALIZADOS
+
+Necesitamos registrar cuatro métricas.
+
+La instrumentación debe funcionar en ambas versiones de Repuestos Vargas.
+
+Puedes centralizarla en:
+
+`resources/js/analytics.js`
+
+Si el archivo ya existe, revísalo y modifícalo sin duplicar la inicialización.
+
+Utiliza JavaScript y los eventos reales de los elementos HTML.
+
+### MÉTRICA PRINCIPAL 1
+
+**Nombre:** Tasa de clics hacia productos y categorías desde el navbar.
+
+Evento:
+
+`header_navigation_click`
+
+El evento debe registrarse cuando el visitante hace clic en:
+
+- Productos del navbar.
+- Categorías del navbar.
+- Enlaces equivalentes del menú móvil.
+
+Propiedades mínimas:
+
+- `destination`
+- `navigation_type`
+- `ab_variant`
+
+Queremos distinguir las acciones que provienen del navbar de las que provienen de otros elementos de la página.
+
+No contabilices los clics en tarjetas de categorías como si fueran clics del navbar.
+
+El análisis debe permitir obtener la proporción de usuarios expuestos que realizaron al menos un clic relevante.
+
+### MÉTRICA PRINCIPAL 2
+
+**Nombre:** Clics en botones de contacto.
+
+Evento:
+
+`contact_click`
+
+Registrar las interacciones con los enlaces existentes de:
+
+- WhatsApp.
+- Llamadas telefónicas.
+
+Propiedades mínimas:
+
+- `method`
+- `ab_variant`
+- `location`, si es útil para distinguir navbar, footer u otras ubicaciones.
+
+Comprueba primero si realmente existen enlaces funcionales para WhatsApp y teléfono.
+
+Si alguno no existe, repórtalo. No inventes un botón ni modifiques el diseño.
+
+Si actualmente el teléfono aparece solamente como texto, no lo registres como un clic.
+
+El evento representa la intención de contacto, no la confirmación de una conversación o llamada completada.
+
+### MÉTRICA SECUNDARIA 1
+
+**Nombre:** Búsquedas realizadas por sesión.
+
+Evento:
+
+`search_performed`
+
+Identifica cómo funciona actualmente el buscador.
+
+Puede ser:
+
+- Formulario tradicional.
+- Búsqueda AJAX.
+- Buscador en tiempo real.
+
+Instrumenta el comportamiento real, sin alterar sus funcionalidades.
+
+Registra cada búsqueda efectivamente ejecutada.
+
+Propiedades recomendadas:
+
+- `ab_variant`
+- `search_location`
+- Identificador de sesión, si es necesario.
+
+La fórmula requerida es:
+
+`Total de búsquedas / Total de sesiones`
+
+No confundas búsquedas por usuario con búsquedas por sesión.
+
+Deja documentado cómo obtener el denominador correcto en PostHog.
+
+Si no existe un buscador funcional, indícalo explícitamente y no inventes uno.
+
+### MÉTRICA SECUNDARIA 2
+
+**Nombre:** Tiempo hasta el primer clic en un producto.
+
+Evento:
+
+`product_first_click`
+
+Debe registrar el tiempo desde el comienzo del recorrido evaluado hasta el primer clic del usuario en una ficha individual de producto.
+
+Propiedad numérica obligatoria:
+
+`elapsed_seconds`
+
+Requisitos:
+
+- Registrar el tiempo en segundos.
+- Conservar el tiempo inicial al navegar entre páginas.
+- Registrar únicamente el primer clic relevante de cada sesión.
+- No contar el enlace general de Productos del navbar como un clic en una ficha.
+- Evitar registros duplicados.
+- Utilizar una definición coherente del comienzo de la medición en ambas variantes.
+- Documentar qué ocurre con usuarios que no llegan a hacer clic en un producto.
+
+El resultado debe permitir comparar el tiempo promedio entre las variantes A y B.
+
+## 9. TAREA 5 — INSTRUMENTAR EL HTML Y BLADE
+
+Analiza los archivos Blade existentes para localizar:
+
+- Navbar de escritorio.
+- Navbar móvil.
+- Enlaces de categorías.
+- Enlaces de productos.
+- Botones de WhatsApp.
+- Enlaces telefónicos.
+- Buscador.
+- Tarjetas o enlaces a detalles de productos.
+
+Cuando sea necesario, agrega atributos HTML como:
+
+`data-ab-navigation`
+
+`data-ab-contact`
+
+`data-ab-search`
+
+`data-ab-product`
+
+Utiliza atributos únicamente en los elementos apropiados.
+
+No alteres:
+
+- Colores.
+- Tipografía.
+- Diseño responsivo.
+- Estructura visual.
+- Rutas.
+- Funcionalidades existentes.
+- Estilos.
+- Comportamiento de los menús.
+
+Asegura que la misma definición de eventos funcione para ambas variantes.
+
+## 10. TAREA 6 — CARGAR POSTHOG EN AMBAS VERSIONES
+
+Comprueba los archivos:
+
+`resources/views/extras/layout.blade.php`
+
+`resources/views/extras/layout-redisenado.blade.php`
+
+Configura la carga del JavaScript de analítica en ambos layouts.
+
+Revisa si debe utilizarse:
+
+`@vite('resources/js/analytics.js')`
+
+o si resulta más apropiado importar el módulo desde el punto de entrada de Vite que ya utiliza el proyecto.
+
+No dupliques la carga.
+
+Verifica que los eventos también puedan registrarse cuando el visitante navega desde la página principal hacia productos y categorías.
+
+No coloques información secreta dentro del HTML.
+
+## 11. TAREA 7 — PRUEBAS EN LOCALHOST
+
+Necesitamos comprobar la integración sin publicar la página.
+
+Entorno:
+
+`http://127.0.0.1:8000`
+
+Realiza las pruebas posibles para comprobar:
+
+1. Laravel sigue funcionando.
+2. La vista original sigue funcionando.
+3. La vista rediseñada sigue funcionando.
+4. Se mantiene la consulta de categorías.
+5. Las rutas principales siguen registradas.
+6. PostHog se inicializa sin errores.
+7. No se generan eventos duplicados.
+8. Los identificadores de visitantes se mantienen correctamente.
+9. Los eventos contienen la variante asignada.
+10. La exposición se registra correctamente cuando corresponde.
+11. El JavaScript se compila correctamente.
+12. Los botones, enlaces y menús conservan su funcionalidad.
+
+Comprueba también la consola del navegador, si dispones de acceso a ella.
+
+No afirmes haber verificado eventos en el panel de PostHog si no tienes acceso real a ese panel.
+
+### Eventos esperados
+
+- `header_navigation_click`
+- `contact_click`
+- `search_performed`
+- `product_first_click`
+
+El objetivo es poder visualizarlos posteriormente en PostHog mediante Activity o Live events.
+
+## 12. TAREA 8 — SEPARAR DATOS DE PRUEBA
+
+Como estamos trabajando en localhost, debemos evitar que las pruebas técnicas alteren los resultados oficiales del experimento.
+
+Implementa una forma de identificar o separar los eventos de desarrollo.
+
+Puedes utilizar una propiedad como:
+
+`test_environment`
+
+Sin embargo, no asumas que agregar esta propiedad excluirá automáticamente las exposiciones del experimento.
+
+Explica cómo utilizar filtros de usuarios internos, un proyecto de pruebas o una configuración equivalente.
+
+Las pruebas visuales de `/prueba-redisenado` no deben contaminar los resultados oficiales.
+
+No lances el experimento automáticamente.
+
+## 13. TAREA 9 — PREPARAR LA CONFIGURACIÓN DE MÉTRICAS EN POSTHOG
+
+Una vez instrumentados los eventos, proporciona instrucciones para configurar las cuatro métricas dentro del experimento existente.
+
+Las métricas serán:
+
+**Principal 1**
+
+- Evento: `header_navigation_click`
+- Tipo deseado: Funnel de conversión.
+- Objetivo: Increase.
+- Medida: proporción de usuarios expuestos con al menos un clic.
+
+**Principal 2**
+
+- Evento: `contact_click`
+- Tipo deseado: Funnel de conversión.
+- Objetivo: Increase.
+- Medida: proporción de usuarios expuestos con al menos un clic de contacto.
+
+**Secundaria 1**
+
+- Evento: `search_performed`
+- Medida: promedio de búsquedas por sesión.
+- Verificar si el editor de experimentos admite el denominador de sesiones.
+- Si no lo admite, proponer un insight o consulta específica.
+- No asumir que un aumento en búsquedas es siempre una mejora.
+
+**Secundaria 2**
+
+- Evento: `product_first_click`
+- Propiedad: `elapsed_seconds`
+- Agregación: promedio de propiedad numérica.
+- Objetivo: Decrease.
+
+No confundas cantidad de eventos con cantidad de usuarios ni promedio de duración.
+
+No crees métricas ficticias.
+
+## 14. RESTRICCIONES GENERALES
+
+- No modificar la base de datos.
+- No ejecutar migraciones.
+- No eliminar controladores existentes.
+- No alterar autenticación.
+- No romper las rutas de productos y categorías.
+- No modificar el diseño visual.
+- No eliminar las vistas originales.
+- No cambiar el contenido comercial de Repuestos Vargas.
+- No trabajar sobre ningún proyecto de floristería.
+- No modificar imágenes faltantes.
+- No inventar tokens de PostHog.
+- No sobrescribir variables existentes del `.env`.
+- No duplicar inicializaciones de PostHog.
+- No crear eventos falsos.
+- No inventar asignaciones A/B.
+- No lanzar el experimento antes de comprobar la integración.
+
+Si alguna funcionalidad no existe, documenta la limitación en lugar de inventarla.
+
+## 15. RESULTADO FINAL ESPERADO
+
+Cuando termines la implementación, proporciona un informe en español con:
+
+1. **Archivos modificados:** rutas, controladores, vistas, JavaScript y configuración.
+
+2. **Dependencias:** cuáles estaban instaladas y cuáles fue necesario instalar.
+
+3. **Asignación A/B:** cómo se determina la variante y cómo se mantiene la identidad del visitante.
+
+4. **Eventos implementados:** explicación individual de los cuatro eventos y sus propiedades.
+
+5. **Pruebas realizadas:** comandos ejecutados, resultados y errores pendientes.
+
+6. **Configuración manual:** qué debemos completar en `.env` y qué debemos configurar en PostHog.
+
+7. **Validación:** pasos para comprobar que aparecen los eventos en Live events.
+
+8. **Métricas:** instrucciones para crear las dos métricas principales y las dos secundarias.
+
+9. **Estado de implementación:** qué funciona realmente y qué requiere verificación adicional.
+
+10. **Lanzamiento:** condiciones necesarias para activar el experimento sin comprometer la validez de los datos.
+
+Realiza las modificaciones mínimas necesarias y verifica cada parte de la integración.
+
+**Prioridad: conservar la página Repuestos Vargas funcionando correctamente e implementar un experimento A/B metodológicamente válido.**
