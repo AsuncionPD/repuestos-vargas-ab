@@ -1,0 +1,76 @@
+Necesito que revises y soluciones los problemas de mi proyecto Laravel ubicado en:
+
+`C:\laragon\www\repuestos-vargas-ab`
+
+**Contexto del problema:**
+
+Al ejecutar `php artisan serve`, inicialmente aparecía un error indicando que faltaba `vendor/autoload.php`. Se ejecutó `composer install` y ese problema se solucionó.
+
+Sin embargo, ahora aparece este error:
+
+```text
+Warning: require_once(C:\laragon\www\repuestos-vargas-ab\public/index.php):
+Failed to open stream: No such file or directory
+
+Fatal error: Failed opening required
+'C:\laragon\www\repuestos-vargas-ab\public/index.php'
+```
+
+**OBJETIVO PRINCIPAL:**
+
+Revisar el proyecto completo, identificar qué archivos, carpetas o configuraciones faltan y corregir los problemas necesarios para que Laravel pueda ejecutarse correctamente mediante:
+
+`php artisan serve`
+
+**REGLAS IMPORTANTES: NO NEGOCIABLES**
+
+1. NO borrar ningún archivo ni carpeta existente.
+2. NO eliminar código, funcionalidades, controladores, modelos, rutas, vistas Blade, componentes ni recursos.
+3. NO sobrescribir archivos existentes sin revisar primero su contenido.
+4. NO reemplazar archivos originales por versiones genéricas.
+5. NO modificar el diseño visual ni la lógica de negocio del sistema.
+6. NO modificar la estructura de la base de datos ni ejecutar migraciones que puedan alterar o eliminar información.
+7. NO ejecutar comandos destructivos como `migrate:fresh`, `db:wipe`, `composer update`, `git reset --hard`, `git clean` o similares.
+8. Antes de modificar cualquier archivo, revisar su contenido y determinar qué cambios son realmente necesarios.
+9. Si un archivo está incompleto o falta, intentar recuperarlo desde el repositorio Git o desde otra ubicación del mismo proyecto antes de reconstruirlo.
+10. Mantener todas las funcionalidades actuales de Repuestos Vargas.
+
+**TAREAS QUE DEBES REALIZAR:**
+
+1. Inspeccionar la estructura completa del proyecto.
+2. Revisar `composer.json`, `composer.lock`, `artisan`, `bootstrap`, `routes` y la configuración de Laravel.
+3. Comprobar si existe la carpeta `public` y si contiene `index.php` y los demás archivos necesarios.
+4. Si faltan archivos, investigar si fueron omitidos del repositorio, movidos o eliminados accidentalmente.
+5. Revisar Git para identificar si existen archivos pendientes, eliminados o versiones anteriores que permitan recuperar los archivos originales.
+6. Verificar que `vendor/autoload.php` esté correctamente generado.
+7. Comprobar que el archivo `.env` exista y que la configuración de la aplicación sea válida. No mostrar ni exponer contraseñas, claves ni credenciales.
+8. Revisar si existen otros archivos esenciales faltantes que puedan provocar errores posteriores.
+9. Aplicar únicamente las correcciones necesarias, preservando todo el código y las funcionalidades existentes.
+10. Ejecutar las comprobaciones necesarias para confirmar que Laravel puede iniciar correctamente.
+
+**FORMA DE TRABAJO:**
+
+- Primero realiza un diagnóstico.
+- Antes de cualquier modificación, explica qué encontraste y qué archivos necesitas modificar o recuperar.
+- Prioriza recuperar archivos originales sobre crear archivos nuevos.
+- No detengas el trabajo después de identificar el primer error: revisa también si existen otros problemas relacionados.
+- Si una acción implica riesgo de pérdida de información, no la ejecutes sin mi autorización.
+
+**RESULTADO ESPERADO:**
+
+Quiero poder ejecutar:
+
+`php artisan serve`
+
+Y acceder al sistema desde:
+
+`http://127.0.0.1:8000`
+
+Al finalizar, indícame:
+- Qué problemas encontraste.
+- Qué archivos recuperaste o modificaste.
+- Qué soluciones aplicaste.
+- Qué verificaciones realizaste.
+- Si el proyecto quedó funcionando correctamente.
+
+**Prioridad absoluta: recuperar y poner en funcionamiento el proyecto sin perder, borrar ni alterar innecesariamente ninguna funcionalidad existente.**
